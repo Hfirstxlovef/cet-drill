@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 一套真题或一份 AI 卷
+model Paper {
+  id        String    @id @default(cuid())
+  level     String // CET4
+  year      Int?
+  month     Int?
+  setNo     Int?
+  source    String // "real" | "ai"
+  title     String
+  status    String    @default("ready") // ingesting | review | ready
+  sections  Section[]
+  attempts  Attempt[]
+  createdAt DateTime  @default(now())
+}
+
+// 渲染所需的共享数据（题型/指令/篇章/词库/音频）
+model Section {
+  id            String     @id @default(cuid())
+  paperId       String
+  paper         Paper      @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  kind          String // writing | listening_news | listening_conv | listening_passage | banked_cloze | matching | careful_reading | translation
+  order         Int
+  title         String? // 篇章标题 / Passage One 等
+  instruction   String?
+  passage       String? // 篇章 / 中文段
+  wordBankJson  String? // 选词填空 A–O：[{letter,word}]
+  paragraphsJson String? // 信息匹配 [A]–[O] 段落：[{letter,text}]
+  audioUrl      String?
+  scriptText    String? // 听力原文
+  questions     Question[]
+
+  @@index([paperId])
+}
+
+// 每题：评分 + 报告 + 错题本的单一来源
+model Question {
+  id            String        @id @default(cuid())
+  sectionId     String
+  section       Section       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  number        Int? // 1–55；写作/翻译为 null
+  type          String // mcq | banked | matching | essay | translation
+  stem          String?
+  optionsJson   String? // ["A. ...","B. ..."] 或 banked/matching 用 section 的词库/段落
+  correct       String? // 正确选项字母；主观题为 null
+  referenceText String? // 写作范文 / 标准译文
+  knowledgeTag  String? // 题型/考点（来自解析，喂报告）
+  points        Float         @default(1)
+  blankIndex    Int? // 选词填空空位序
+  origin        String? // "real" | "ai"：AI 练习卷里区分真题/AI 穿插题
+  attemptItems  AttemptItem[]
+  errorLogs     ErrorLog[]
+
+  @@index([sectionId])
+}
+
+// 一次练习会话
+model Attempt {
+  id          String        @id @default(cuid())
+  paperId     String
+  paper       Paper         @relation(fields: [paperId], references: [id])
+  mode        String        @default("full") // full | section | drill
+  startedAt   DateTime      @default(now())
+  submittedAt DateTime?
+  totalScore  Float?
+  reportJson  String? // 能力 / 不足 / 训练推荐
+  items       AttemptItem[]
+
+  @@index([paperId])
+}
+
+model AttemptItem {
+  id             String   @id @default(cuid())
+  attemptId      String
+  attempt        Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question @relation(fields: [questionId], references: [id])
+  userAnswer     String? // 选项字母 或 作文/译文全文
+  isCorrect      Boolean?
+  aiFeedbackJson String? // 主观题 rubric 评分
+  updatedAt      DateTime @updatedAt
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
+}
+
+// 错题本（间隔复习）
+model ErrorLog {
+  id          String    @id @default(cuid())
+  questionId  String
+  question    Question  @relation(fields: [questionId], references: [id])
+  errorType   String?
+  note        String?
+  nextReviewAt DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+// 生词本（划词而来）
+model VocabMark {
+  id           String    @id @default(cuid())
+  word         String
+  context      String?
+  definition   String?
+  paperId      String?
+  nextReviewAt DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+// 高亮 / 下划线 / 批注
+model Annotation {
+  id         String  @id @default(cuid())
+  paperId    String
+  kind       String // highlight | underline | note
+  color      String?
+  targetJson String // 定位锚（块 id + 文本/偏移）
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([paperId])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// 单词释义缓存（点词查词用）
+model Dict {
+  word        String   @id // 小写
+  phonetic    String?
+  entriesJson String // [{pos, meaning}]
+  createdAt   DateTime @default(now())
+}

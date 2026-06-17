@@ -1,0 +1,26 @@
+node_modules
+.next
+out
+dev.db
+dev.db-journal
+*.log
+.DS_Store
+.env
+
+# 抽取中间产物
+scripts/ingest/.cache
+
+# === 真题数据，永不公开（版权）===
+/四级真题+答案+听力（2025.6-2015.06）/
+/public/audio/
+prisma/*.db
+prisma/*.db.bak*
+prisma/dev.db-journal
+scripts/.ocr-cache/
+
+# 本地产物 / 会话
+*.tsbuildinfo
+.pid
+.claude/
+__pycache__/
+*.pyc

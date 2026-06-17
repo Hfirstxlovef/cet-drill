@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* 浅色：用于题库/设置等管理界面 */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 22% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 22% 18%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 243 75% 59%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 22% 18%;
+    --accent: 243 75% 95%;
+    --accent-foreground: 243 60% 42%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --ok: 142 71% 38%;
+    --bad: 0 72% 51%;
+  }
+
+  /* 深色：用于答题阅读器（贴近「真题在线」观感） */
+  .dark {
+    --background: 0 0% 16%;
+    --foreground: 0 0% 91%;
+    --card: 0 0% 20%;
+    --card-foreground: 0 0% 91%;
+    --muted: 0 0% 25%;
+    --muted-foreground: 0 0% 64%;
+    --border: 0 0% 32%;
+    --input: 0 0% 32%;
+    --ring: 243 80% 72%;
+    --primary: 243 82% 72%;
+    --primary-foreground: 0 0% 12%;
+    --secondary: 0 0% 25%;
+    --secondary-foreground: 0 0% 91%;
+    --accent: 243 35% 32%;
+    --accent-foreground: 0 0% 96%;
+    --destructive: 0 62% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --ok: 142 60% 55%;
+    --bad: 0 70% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* 试卷正文排版：英文衬线、舒适行距，行内题号/选项在组件里定义 */
+.exam-prose {
+  font-family: Georgia, "Times New Roman", Times, "Songti SC", serif;
+  font-size: 17px;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+}
+.exam-prose .directions {
+  font-style: italic;
+  opacity: 0.92;
+}
+
+/* 划词高亮（生词/标注）默认样式 */
+mark.vocab-mark {
+  background: hsl(48 96% 53% / 0.35);
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+.dark mark.vocab-mark {
+  background: hsl(48 96% 53% / 0.28);
+  color: inherit;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.35);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.55);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
