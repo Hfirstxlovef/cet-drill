@@ -70,6 +70,10 @@ npm run build
 npm run start      # 监听 13820 端口
 ```
 
+<img width="1427" height="944" alt="image" src="https://github.com/user-attachments/assets/1806953a-045c-4d4f-be50-0164191d41e6" />
+
+<img width="1425" height="951" alt="image" src="https://github.com/user-attachments/assets/29b0a7e1-518f-4186-a7b3-3354597d01a6" />
+
 仓库也提供了 `start.sh` / `stop.sh` 便捷脚本。
 
 ## 📁 项目结构
@@ -91,6 +95,12 @@ scripts/              # 内容导入与校对脚本（需自备素材）
 ## 🔧 脚本说明
 
 `scripts/` 下是一套把外部素材导入数据库的工具链（OCR、答案抽取、听力音频关联、文字层校对等）。这些脚本面向**你自己准备的素材**，仓库本身不附带任何受版权保护的内容。
+
+## 联系方式
+
+团队: 蟑螂恶霸团队（sun740883686@foxmail.com)
+项目维护: 仅限学习交流
+问题反馈: 请提交 Issue
 
 ## 🙏 致谢
 
